@@ -86,7 +86,7 @@ const exportarTabla = () => {
     html2canvas(tabla).then((canvas) => {
         // Creamos un enlace para descargar la imagen
         const enlace = document.createElement('a');
-        enlace.download = 'tabla.png';
+        enlace.download = 'horario.png';
         enlace.href = canvas.toDataURL();
 
         // Agregamos el enlace al documento y lo hacemos clic automáticamente
@@ -167,11 +167,6 @@ const exportarTabla = () => {
                 </div>
                 <button type="submit" class="btn btn-dark">Agregar</button>
             </form>
-            <div class="d-flex justify-content-end">
-                <button class="btn btn-primary" @click="exportarTabla">
-                    Descargar
-                </button>
-            </div>
         </div>
 
         <div class="col-12 col-md-8 table-responsive mt-3">
@@ -205,6 +200,11 @@ const exportarTabla = () => {
                     </tr>
                 </tbody>
             </table>
+            <div class="mt-3">
+                <button class="btn btn-primary" @click="exportarTabla">
+                    Descargar
+                </button>
+            </div>
         </div>
     </div>
 </template>
