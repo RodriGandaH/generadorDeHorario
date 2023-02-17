@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import html2canvas from 'html2canvas';
 
 const materia = ref('');
 const dia = ref('');
@@ -77,6 +78,25 @@ const getColor = (materia) => {
     }
     return 'transparent';
 };
+const exportarTabla = () => {
+    // Capturamos el elemento de la tabla
+    const tabla = document.querySelector('#tabla');
+
+    // Usamos html2canvas para capturar una imagen de la tabla
+    html2canvas(tabla).then((canvas) => {
+        // Creamos un enlace para descargar la imagen
+        const enlace = document.createElement('a');
+        enlace.download = 'tabla.png';
+        enlace.href = canvas.toDataURL();
+
+        // Agregamos el enlace al documento y lo hacemos clic automáticamente
+        document.body.appendChild(enlace);
+        enlace.click();
+
+        // Eliminamos el enlace del documento
+        document.body.removeChild(enlace);
+    });
+};
 </script>
 
 <template>
@@ -147,9 +167,15 @@ const getColor = (materia) => {
                 </div>
                 <button type="submit" class="btn btn-dark">Agregar</button>
             </form>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-primary" @click="exportarTabla">
+                    Descargar
+                </button>
+            </div>
         </div>
-        <div class="col-12 col-md-8">
-            <table class="table table-bordered text-center table-responsive">
+
+        <div class="col-12 col-md-8 table-responsive mt-3">
+            <table class="table table-bordered text-center" id="tabla">
                 <thead>
                     <tr>
                         <th style="width: 10%">Hora</th>
