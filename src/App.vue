@@ -97,6 +97,9 @@ const exportarTabla = () => {
         document.body.removeChild(enlace);
     });
 };
+const reemplazarComa = () => {
+    materia.value = materia.value.replace(/,/g, '-');
+};
 </script>
 
 <template>
@@ -111,15 +114,24 @@ const exportarTabla = () => {
                         type="text"
                         class="form-control"
                         id="materia"
+                        @input="reemplazarComa"
                     />
                 </div>
-                <div class="">
+                <div class="mb-3">
                     <label for="color" class="form-label">Color</label>
                     <input
                         v-model.trim="color"
                         type="color"
                         class="form-control"
                         id="color"
+                        size="30"
+                        title="Seleccionar color"
+                        style="
+                            appearance: none;
+                            height: 40px;
+                            border-radius: 5px;
+                            padding: 0;
+                        "
                     />
                 </div>
                 <div class="mb-3">
