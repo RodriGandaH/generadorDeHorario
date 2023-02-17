@@ -115,6 +115,7 @@ const reemplazarComa = () => {
                         class="form-control"
                         id="materia"
                         @input="reemplazarComa"
+                        required
                     />
                 </div>
                 <div class="mb-3">
@@ -132,6 +133,7 @@ const reemplazarComa = () => {
                             border-radius: 5px;
                             padding: 0;
                         "
+                        required
                     />
                 </div>
                 <div class="mb-3">
