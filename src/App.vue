@@ -15,6 +15,8 @@ const columnas = [
     'Viernes',
     'Sábado',
 ];
+const color = ref('#000000');
+const materiaColors = {};
 
 const agregarMateria = () => {
     if (horarioInicio.value >= horarioFin.value) {
@@ -27,7 +29,13 @@ const agregarMateria = () => {
         dia: dia.value,
         horarioInicio: horarioInicio.value,
         horarioFin: horarioFin.value,
+        color: color.value,
     };
+    if (!materiaColors[nuevaMateria.materia]) {
+        materiaColors[nuevaMateria.materia] = color.value;
+    }
+    // Asignamos el color de la materia a la propiedad color de nuevaMateria
+    nuevaMateria.color = materiaColors[nuevaMateria.materia];
 
     // Buscamos si ya existe una fila con el mismo horario de inicio
     const filaExistente = arregloFilas.value.find((fila) =>
@@ -63,13 +71,11 @@ const agregarMateria = () => {
     horarioInicio.value = '';
     horarioFin.value = '';
 };
-const generarColorAleatorio = () => {
-    const letras = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-        color += letras[Math.floor(Math.random() * 16)];
+const getColor = (materia) => {
+    if (materia in materiaColors) {
+        return materiaColors[materia];
     }
-    return color;
+    return 'transparent';
 };
 </script>
 
@@ -85,6 +91,15 @@ const generarColorAleatorio = () => {
                         type="text"
                         class="form-control"
                         id="materia"
+                    />
+                </div>
+                <div class="mb-3">
+                    <label for="color" class="form-label">Color</label>
+                    <input
+                        v-model.trim="color"
+                        type="color"
+                        class="form-control"
+                        id="color"
                     />
                 </div>
                 <div class="mb-3">
@@ -134,17 +149,31 @@ const generarColorAleatorio = () => {
             </form>
         </div>
         <div class="col-12 col-md-8">
-            <table class="table">
+            <table class="table table-bordered text-center table-responsive">
                 <thead>
                     <tr>
-                        <th v-for="(dia, index) in columnas" :key="index">
-                            {{ dia }}
-                        </th>
+                        <th style="width: 10%">Hora</th>
+                        <th style="width: 15%">Lunes</th>
+                        <th style="width: 15%">Martes</th>
+                        <th style="width: 15%">Miércoles</th>
+                        <th style="width: 15%">Jueves</th>
+                        <th style="width: 15%">Viernes</th>
+                        <th style="width: 15%">Sábado</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(fila, index) in arregloFilas" :key="index">
-                        <td v-for="(columna, index) in fila" :key="index">
+                        <td
+                            v-for="(columna, index) in fila"
+                            :key="index"
+                            :style="{
+                                backgroundColor: getColor(columna),
+                                color:
+                                    columna.indexOf(',') > -1
+                                        ? 'red'
+                                        : 'inherit',
+                            }"
+                        >
                             {{ columna }}
                         </td>
                     </tr>
