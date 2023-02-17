@@ -4,6 +4,7 @@ import html2canvas from 'html2canvas';
 
 const materia = ref('');
 const dia = ref('');
+const aula = ref('');
 const horarioInicio = ref('');
 const horarioFin = ref('');
 const arregloFilas = ref([]);
@@ -27,16 +28,18 @@ const agregarMateria = () => {
 
     const nuevaMateria = {
         materia: materia.value,
+        aula: aula.value,
         dia: dia.value,
         horarioInicio: horarioInicio.value,
         horarioFin: horarioFin.value,
         color: color.value,
     };
-    if (!materiaColors[nuevaMateria.materia]) {
-        materiaColors[nuevaMateria.materia] = color.value;
+    if (!materiaColors[nuevaMateria.materia.split('-')[0]]) {
+        //texto.split('-')[0]
+        materiaColors[nuevaMateria.materia.split('-')[0]] = color.value;
     }
     // Asignamos el color de la materia a la propiedad color de nuevaMateria
-    nuevaMateria.color = materiaColors[nuevaMateria.materia];
+    nuevaMateria.color = materiaColors[nuevaMateria.materia.split('-')[0]];
 
     // Buscamos si ya existe una fila con el mismo horario de inicio
     const filaExistente = arregloFilas.value.find((fila) =>
@@ -49,13 +52,14 @@ const agregarMateria = () => {
             // Si la posición ya está ocupada, agregamos una coma al final
             filaExistente[diaIndex] += ',';
         }
-        filaExistente[diaIndex] += nuevaMateria.materia;
+        filaExistente[diaIndex] +=
+            nuevaMateria.materia + '-' + nuevaMateria.aula;
     } else {
         // Si no existe, creamos una nueva fila
         const fila = ['', '', '', '', '', '', ''];
         fila[0] = nuevaMateria.horarioInicio + '-' + nuevaMateria.horarioFin;
         const diaIndex = columnas.indexOf(nuevaMateria.dia);
-        fila[diaIndex] = nuevaMateria.materia;
+        fila[diaIndex] = nuevaMateria.materia + '-' + nuevaMateria.aula;
         arregloFilas.value.push(fila);
     }
 
@@ -65,16 +69,17 @@ const agregarMateria = () => {
         const horaB = new Date('1970-01-01T' + b[0].split('-')[0]);
         return horaA - horaB;
     });
-    console.log(arregloFilas);
+    console.log(arregloFilas.value);
     // Limpiamos los campos del formulario
     materia.value = '';
+    aula.value = '';
     dia.value = '';
     horarioInicio.value = '';
     horarioFin.value = '';
 };
 const getColor = (materia) => {
-    if (materia in materiaColors) {
-        return materiaColors[materia];
+    if (materia.split('-')[0] in materiaColors) {
+        return materiaColors[materia.split('-')[0]];
     }
     return 'transparent';
 };
@@ -114,6 +119,17 @@ const reemplazarComa = () => {
                         type="text"
                         class="form-control"
                         id="materia"
+                        @input="reemplazarComa"
+                        required
+                    />
+                </div>
+                <div class="mb-3">
+                    <label for="aula" class="form-label">Aula</label>
+                    <input
+                        v-model.trim="aula"
+                        type="text"
+                        class="form-control"
+                        id="aula"
                         @input="reemplazarComa"
                         required
                     />
@@ -207,11 +223,17 @@ const reemplazarComa = () => {
                             v-for="(columna, index) in fila"
                             :key="index"
                             :style="{
-                                backgroundColor: getColor(columna),
+                                backgroundColor: getColor(
+                                    columna.split('-')[0]
+                                ),
                                 color:
                                     columna.indexOf(',') > -1
                                         ? 'red'
                                         : 'inherit',
+                                backgroundColor:
+                                    columna.indexOf(',') > -1
+                                        ? 'transparent'
+                                        : getColor(columna.split('-')[0]),
                             }"
                         >
                             {{ columna }}
