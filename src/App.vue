@@ -129,6 +129,7 @@ const limpiarMateria = (e) => {
                             background-color: #ffc433;
                             width: 40px;
                             border: 1px solid black;
+                            border-radius: 5px;
                         "
                     >
                         <a href="">
