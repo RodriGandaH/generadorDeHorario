@@ -5,8 +5,16 @@ const materia = ref('');
 const dia = ref('');
 const horarioInicio = ref('');
 const horarioFin = ref('');
-const materias = ref([]);
-const dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const arregloFilas = ref([]);
+const columnas = [
+    'Hora',
+    'Lunes',
+    'Martes',
+    'Miércoles',
+    'Jueves',
+    'Viernes',
+    'Sábado',
+];
 
 const agregarMateria = () => {
     if (horarioInicio.value >= horarioFin.value) {
@@ -14,44 +22,54 @@ const agregarMateria = () => {
         return;
     }
 
-    let existe = false;
-    // Verificar si existe una materia en el mismo horario y día
-    for (let i = 0; i < materias.value.length; i++) {
-        if (
-            materias.value[i].dia === dia.value &&
-            materias.value[i].horarioInicio === horarioInicio.value &&
-            materias.value[i].horarioFin === horarioFin.value
-        ) {
-            materias.value[i].materia =
-                materias.value[i].materia + ', ' + materia.value;
-            materias.value[i].color = 'red';
-            existe = true;
-            break;
+    const nuevaMateria = {
+        materia: materia.value,
+        dia: dia.value,
+        horarioInicio: horarioInicio.value,
+        horarioFin: horarioFin.value,
+    };
+
+    // Buscamos si ya existe una fila con el mismo horario de inicio
+    const filaExistente = arregloFilas.value.find((fila) =>
+        fila[0].startsWith(nuevaMateria.horarioInicio)
+    );
+    if (filaExistente) {
+        // Si existe, actualizamos el valor en la posición del día correspondiente
+        const diaIndex = columnas.indexOf(nuevaMateria.dia);
+        if (filaExistente[diaIndex] !== '') {
+            // Si la posición ya está ocupada, agregamos una coma al final
+            filaExistente[diaIndex] += ',';
         }
+        filaExistente[diaIndex] += nuevaMateria.materia;
+    } else {
+        // Si no existe, creamos una nueva fila
+        const fila = ['', '', '', '', '', '', ''];
+        fila[0] = nuevaMateria.horarioInicio + '-' + nuevaMateria.horarioFin;
+        const diaIndex = columnas.indexOf(nuevaMateria.dia);
+        fila[diaIndex] = nuevaMateria.materia;
+        arregloFilas.value.push(fila);
     }
 
-    if (!existe) {
-        const nuevaMateria = {
-            materia: materia.value,
-            dia: dia.value,
-            horarioInicio: horarioInicio.value,
-            horarioFin: horarioFin.value,
-        };
-        materias.value.push(nuevaMateria);
-    }
-
-    materias.value.sort((a, b) => {
-        const horaA = new Date('1970-01-01T' + a.horarioInicio);
-        const horaB = new Date('1970-01-01T' + b.horarioInicio);
+    // Ordenamos las filas por hora de inicio
+    arregloFilas.value.sort((a, b) => {
+        const horaA = new Date('1970-01-01T' + a[0].split('-')[0]);
+        const horaB = new Date('1970-01-01T' + b[0].split('-')[0]);
         return horaA - horaB;
     });
-
-    console.log(materias.value);
-
+    console.log(arregloFilas);
+    // Limpiamos los campos del formulario
     materia.value = '';
     dia.value = '';
     horarioInicio.value = '';
     horarioFin.value = '';
+};
+const generarColorAleatorio = () => {
+    const letras = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letras[Math.floor(Math.random() * 16)];
+    }
+    return color;
 };
 </script>
 
@@ -119,24 +137,15 @@ const agregarMateria = () => {
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Hora</th>
-                        <th v-for="(dia, index) in dias" :key="index">
+                        <th v-for="(dia, index) in columnas" :key="index">
                             {{ dia }}
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(materia, index) in materias" :key="index">
-                        <td>
-                            {{ materia.horarioInicio }} -
-                            {{ materia.horarioFin }}
-                        </td>
-                        <td v-for="(dia, index) in dias" :key="index">
-                            <template v-if="materia.dia === dia">
-                                <span :style="{ color: materia.color }">{{
-                                    materia.materia
-                                }}</span>
-                            </template>
+                    <tr v-for="(fila, index) in arregloFilas" :key="index">
+                        <td v-for="(columna, index) in fila" :key="index">
+                            {{ columna }}
                         </td>
                     </tr>
                 </tbody>
@@ -144,3 +153,4 @@ const agregarMateria = () => {
         </div>
     </div>
 </template>
+<style scoped></style>
