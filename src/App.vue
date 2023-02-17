@@ -113,7 +113,7 @@ const exportarTabla = () => {
                         id="materia"
                     />
                 </div>
-                <div class="mb-3">
+                <div class="">
                     <label for="color" class="form-label">Color</label>
                     <input
                         v-model.trim="color"
@@ -165,7 +165,12 @@ const exportarTabla = () => {
                         </label>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-dark">Agregar</button>
+                <div class="mt-3 d-flex justify-content-between">
+                    <button type="submit" class="btn btn-dark">Agregar</button>
+                    <a class="btn btn-primary" @click="exportarTabla"
+                        >Descargar</a
+                    >
+                </div>
             </form>
         </div>
 
@@ -200,11 +205,6 @@ const exportarTabla = () => {
                     </tr>
                 </tbody>
             </table>
-            <div class="mt-3">
-                <button class="btn btn-primary" @click="exportarTabla">
-                    Descargar
-                </button>
-            </div>
         </div>
     </div>
 </template>
