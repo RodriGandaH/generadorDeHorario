@@ -20,7 +20,8 @@ const columnas = [
 ];
 const color = ref('#000000');
 const materiaColors = {};
-
+const materiaAQuitar = ref('');
+console.log(materiaAQuitar.value);
 const agregarMateria = () => {
     if (horarioInicio.value >= horarioFin.value) {
         alert('La hora de inicio debe ser menor a la hora de fin');
@@ -110,6 +111,55 @@ const limpiarMateria = (e) => {
     materia.value = '';
 
     e.preventDefault();
+};
+const quitarMateria = () => {
+    const materiaAQuitarValue = materiaAQuitar.value;
+    if (!materiaAQuitarValue) {
+        alert('Ingrese una materia');
+        return;
+    }
+
+    for (let i = 0; i < arregloFilas.value.length; i++) {
+        const fila = arregloFilas.value[i];
+        for (let j = 1; j < fila.length; j++) {
+            const celda = fila[j];
+            if (celda.includes(materiaAQuitarValue)) {
+                let nuevaCelda = celda;
+                if (celda.includes(',')) {
+                    // La celda contiene la materia y el aula separados por una coma
+                    const partesCelda = celda.split(',');
+                    if (partesCelda.length === 3) {
+                        // La celda contiene una materia y dos aulas separados por comas
+                        nuevaCelda = `${partesCelda[0]},${partesCelda[2]}`;
+                    } else {
+                        // La celda contiene varias materias separadas por comas
+                        nuevaCelda = partesCelda
+                            .filter(
+                                (texto) => !texto.includes(materiaAQuitarValue)
+                            )
+                            .join(',');
+                    }
+                } else {
+                    // La celda contiene solamente la materia
+                    nuevaCelda = '';
+                }
+                arregloFilas.value[i][j] = nuevaCelda;
+            }
+        }
+    }
+
+    // Actualizar la tabla HTML
+    const tabla = document.querySelector('#tabla');
+    for (let i = 0; i < tabla.rows.length; i++) {
+        const fila = tabla.rows[i];
+        for (let j = 1; j < fila.cells.length; j++) {
+            const celda = fila.cells[j];
+            const materia = celda.innerText.split('-')[0];
+            celda.style.backgroundColor = getColor(materia);
+        }
+    }
+
+    materiaAQuitar.value = '';
 };
 </script>
 
@@ -305,6 +355,22 @@ const limpiarMateria = (e) => {
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="mt-3">
+            <label class="form-label">
+                Quitar materia
+                <input
+                    v-model.trim="materiaAQuitar"
+                    type="text"
+                    class="form-control"
+                    id="materiaAQuitar"
+                    required
+                />
+            </label>
+            <br />
+            <button class="btn btn-danger" @click="quitarMateria">
+                Quitar
+            </button>
         </div>
     </div>
 </template>
